@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { CanvasRevealEffect } from "@/components/blocks/sign-in-flow-1";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/lib/api";
