@@ -245,7 +245,6 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
 const ShaderMaterial = ({
   source,
   uniforms,
-  maxFps = 60,
 }: {
   source: string;
   hovered?: boolean;
@@ -254,13 +253,10 @@ const ShaderMaterial = ({
 }) => {
   const { size } = useThree();
   const ref = useRef<THREE.Mesh>(null);
-  let lastFrameTime = 0;
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const timestamp = clock.getElapsedTime();
-
-    lastFrameTime = timestamp;
 
     const material: any = ref.current.material;
     const timeLocation = material.uniforms.u_time;
@@ -378,7 +374,7 @@ function MiniNavbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
-  const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shapeTimeoutRef = useRef<number | null>(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);

@@ -23,7 +23,7 @@ function MiniNavbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
-  const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shapeTimeoutRef = useRef<number | null>(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
