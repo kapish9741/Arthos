@@ -4,16 +4,14 @@ const cors = require('cors');
 const authRoutes = require('./src/routes/auth');
 
 const app = express();
+const PORT = process.env.PORT;
 
 
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 
-app.get('/health', (req, res) => {
-  res.json({ success: true, message: 'Server running' });
-});
 
-app.listen(8080, () => {
-  console.log('Server running on https://artshos.onrender.com');
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`https://artshos.onrender.com`);
 });
