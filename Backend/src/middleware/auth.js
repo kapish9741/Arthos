@@ -1,9 +1,7 @@
 const { verifyToken } = require('../service/auth');
 
-// Check if user has valid token
 function authenticateToken(req, res, next) {
   try {
-    // Get token from header
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -11,7 +9,6 @@ function authenticateToken(req, res, next) {
       return res.status(401).json({ success: false, message: 'No token' });
     }
 
-    // Verify token
     const decoded = verifyToken(token);
     req.user = decoded;
     next();

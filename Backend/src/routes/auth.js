@@ -3,7 +3,6 @@ const router = express.Router();
 const { signup, login, getUserByEmail } = require('../service/auth');
 const { authenticateToken } = require('../middleware/auth');
 
-// SIGNUP - Create account
 router.post('/signup', async (req, res) => {
   try {
     const { email, password, name } = req.body;
@@ -18,7 +17,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// LOGIN - Sign in
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -33,7 +31,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET PROFILE - Protected route
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await getUserByEmail(req.user.email);

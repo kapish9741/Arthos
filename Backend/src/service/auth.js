@@ -1,12 +1,10 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
 
-// 1. Make JWT token
 function generateToken(email) {
   return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-// 2. Check if JWT token is valid
 function verifyToken(token) {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
@@ -15,39 +13,55 @@ function verifyToken(token) {
   }
 }
 
-// 3. Create new user
 async function signup(email, password, name) {
-  // Check if user exists
-  const exists = await prisma.user.findUnique({ where: { email } });
-  if (exists) throw new Error('User already exists');
+  try {
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) throw new Error('User already exists');
 
-  // Create user in database
-  const user = await prisma.user.create({
-    data: { email, password, name }
-  });
+    const user = await prisma.user.create({
+      data: { email, password, name }
+    });
 
-  // Return token and user info
-  const token = generateToken(email);
-  return { token, user: { id: user.id, email: user.email, name: user.name } };
+    const token = generateToken(email);
+    return { token, user: { id: user.id, email: user.email, name: user.name } };
+  } catch (error) {
+    if (error.message === 'User already exists') {
+      throw error;
+    }
+    console.error('Signup error:', error);
+    throw new Error('Signup failed. Please try again.');
+  }
 }
 
-// 4. Login user
 async function login(email, password) {
-  // Find user in database
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new Error('User not found');
-  if (user.password !== password) throw new Error('Wrong password');
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) throw new Error('Invalid email or password');
+    if (user.password !== password) throw new Error('Invalid email or password');
 
-  // Return token and user info
-  const token = generateToken(email);
-  return { token, user: { id: user.id, email: user.email, name: user.name } };
+    const token = generateToken(email);
+    return { token, user: { id: user.id, email: user.email, name: user.name } };
+  } catch (error) {
+    if (error.message === 'Invalid email or password') {
+      throw error;
+    }
+    console.error('Login error:', error);
+    throw new Error('Login failed. Please try again.');
+  }
 }
 
-// 5. Get user by email
 async function getUserByEmail(email) {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new Error('User not found');
-  return { id: user.id, email: user.email, name: user.name };
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) throw new Error('User not found');
+    return { id: user.id, email: user.email, name: user.name };
+  } catch (error) {
+    if (error.message === 'User not found') {
+      throw error;
+    }
+    console.error('Get user error:', error);
+    throw new Error('Failed to get user. Please try again.');
+  }
 }
 
 module.exports = { generateToken, verifyToken, signup, login, getUserByEmail };
