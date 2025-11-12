@@ -743,8 +743,6 @@ export default function SignInFlow({
     if (onSubmit) {
       onSubmit(e);
     } else {
-      // Default behavior if no onSubmit provided
-      console.log("Login:", { email, password });
       navigate('/dashboard');
     }
   };
