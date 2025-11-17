@@ -40,7 +40,6 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
-// LOGOUT
 router.post('/logout', authenticateToken, (req, res) => {
   res.status(200).json({ success: true, message: 'Logged out' });
 });
