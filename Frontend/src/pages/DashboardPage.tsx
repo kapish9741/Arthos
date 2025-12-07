@@ -1,26 +1,34 @@
+import { AiDailyBriefCard } from "@/components/ai/AiDailyBriefCard";
+import { SectionCards } from "@/components/section-cards";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
+import data from "@/app/dashboard/data.json";
+
 const DashboardPage = () => {
+  // TODO: Replace with actual user ID from auth context
+  const userId = "user-123";
+
   return (
-    <div className="flex-1 p-6 bg-neutral-900 overflow-auto">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-6">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-neutral-800 p-6 rounded-xl border border-neutral-700">
-            <h3 className="text-lg font-semibold text-white mb-2">Portfolio Value</h3>
-            <p className="text-3xl font-bold text-white">$12,458.32</p>
-            <p className="text-sm text-green-400 mt-2">+8.2% this week</p>
-          </div>
-          <div className="bg-neutral-800 p-6 rounded-xl border border-neutral-700">
-            <h3 className="text-lg font-semibold text-white mb-2">NFTs Owned</h3>
-            <p className="text-3xl font-bold text-white">24</p>
-            <p className="text-sm text-neutral-400 mt-2">Across 8 collections</p>
-          </div>
-          <div className="bg-neutral-800 p-6 rounded-xl border border-neutral-700">
-            <h3 className="text-lg font-semibold text-white mb-2">Stocks Held</h3>
-            <p className="text-3xl font-bold text-white">12</p>
-            <p className="text-sm text-neutral-400 mt-2">Total value: $8,234</p>
-          </div>
-        </div>
+    <div className="@container/main flex w-full flex-col gap-4 bg-neutral-900 p-4 lg:gap-6 lg:p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
       </div>
+
+      {/* Portfolio Stats Cards */}
+      <SectionCards />
+
+      {/* AI Daily Brief - Integrated inline */}
+      <div className="px-4 lg:px-6">
+        <AiDailyBriefCard userId={userId} />
+      </div>
+
+      {/* Interactive Chart */}
+      <div className="px-4 lg:px-6">
+        <ChartAreaInteractive />
+      </div>
+
+      {/* Portfolio & Transactions Table */}
+      <DataTable data={data} />
     </div>
   );
 };

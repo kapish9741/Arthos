@@ -1,6 +1,7 @@
 import { Search, Bell, User, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const categories = [
   { label: "All", active: true },
@@ -14,13 +15,18 @@ export function MarketplaceHeader() {
   return (
     <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
       <div className="flex items-center gap-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <form className="relative">
+          <Label htmlFor="marketplace-search" className="sr-only">
+            Search marketplace
+          </Label>
+          <Search className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
+            id="marketplace-search"
+            type="search"
             placeholder="Search marketplace..."
-            className="w-64 pl-10 bg-secondary border-none text-foreground placeholder:text-muted-foreground"
+            className="w-64 pl-10 pr-4 bg-background border-input shadow-sm"
           />
-        </div>
+        </form>
         <div className="flex items-center gap-2">
           {categories.map((cat) => (
             <Button

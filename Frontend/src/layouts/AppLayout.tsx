@@ -88,7 +88,7 @@ export default function AppLayout() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-auto">
         <Outlet />
       </div>
     </div>

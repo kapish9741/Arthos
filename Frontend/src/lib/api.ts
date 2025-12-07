@@ -87,3 +87,13 @@ export const authApi = {
     }
   },
 };
+
+// Axios instance for market data (no auth required)
+import axios from 'axios';
+
+export const marketApi = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});

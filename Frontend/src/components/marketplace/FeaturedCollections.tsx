@@ -1,4 +1,6 @@
 import { BadgeCheck } from "lucide-react"
+import { AiBuySellBadge } from "@/components/ai/AiBuySellBadge"
+import { useState } from "react"
 
 const featuredCollections = [
   {
@@ -40,6 +42,19 @@ const featuredCollections = [
 ]
 
 export function FeaturedCollections() {
+  const [_explainAsset, setExplainAsset] = useState<number | null>(null)
+  
+  // Mock AI predictions for each collection
+  const getAIPrediction = (collectionId: number) => {
+    const predictions: Record<number, { action: "BUY" | "HOLD" | "SELL"; confidence: number; reason: string }> = {
+      1: { action: "HOLD", confidence: 0.65, reason: "Floor price declining but volume steady. Wait for market stabilization." },
+      2: { action: "SELL", confidence: 0.78, reason: "Significant floor price drop with low liquidity. Consider exit." },
+      3: { action: "BUY", confidence: 0.72, reason: "Strong community and holder base. Minor dip presents buying opportunity." },
+      4: { action: "HOLD", confidence: 0.60, reason: "Unverified collection with moderate growth. Monitor closely." },
+    }
+    return predictions[collectionId]
+  }
+
   return (
     <section>
       <div className="mb-4">
@@ -47,32 +62,47 @@ export function FeaturedCollections() {
         <p className="text-sm text-muted-foreground">This week&apos;s curated collections</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {featuredCollections.map((collection) => (
-          <div
-            key={collection.id}
-            className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer group"
-          >
+        {featuredCollections.map((collection) => {
+          const aiPrediction = getAIPrediction(collection.id)
+          return (
             <div
-              className="h-40 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
-              style={{ backgroundImage: `url(${collection.image})` }}
-            />
-            <div className="p-3">
-              <div className="flex items-center gap-1 mb-1">
-                <span className="font-semibold text-foreground text-sm">{collection.name}</span>
-                {collection.verified && <BadgeCheck className="w-4 h-4 text-primary fill-primary" />}
+              key={collection.id}
+              className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-colors cursor-pointer group"
+            >
+              <div
+                className="h-40 bg-cover bg-center group-hover:scale-105 transition-transform duration-300 relative"
+                style={{ backgroundImage: `url(${collection.image})` }}
+              />
+              <div className="p-3 space-y-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="font-semibold text-foreground text-sm">{collection.name}</span>
+                  {collection.verified && <BadgeCheck className="w-4 h-4 text-primary fill-primary" />}
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Floor price:</span>
+                  <span className="text-foreground font-medium">{collection.floorPrice}</span>
+                  <span className="text-muted-foreground">{collection.currency}</span>
+                  <span className={`ml-auto font-medium ${collection.change >= 0 ? "text-success" : "text-danger"}`}>
+                    {collection.change >= 0 ? "+" : ""}
+                    {collection.change}%
+                  </span>
+                </div>
+                
+                {/* AI Buy/Sell Badge integrated inline */}
+                <div className="pt-2 border-t border-border">
+                  <AiBuySellBadge
+                    action={aiPrediction.action}
+                    confidence={aiPrediction.confidence}
+                    reason={aiPrediction.reason}
+                    onExplain={() => setExplainAsset(collection.id)}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Floor price:</span>
-                <span className="text-foreground font-medium">{collection.floorPrice}</span>
-                <span className="text-muted-foreground">{collection.currency}</span>
-                <span className={`ml-auto font-medium ${collection.change >= 0 ? "text-success" : "text-danger"}`}>
-                  {collection.change >= 0 ? "+" : ""}
-                  {collection.change}%
-                </span>
-              </div>
+
+              {/* Explain modal would go here if needed */}
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
