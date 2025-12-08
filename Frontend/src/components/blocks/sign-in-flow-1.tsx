@@ -38,7 +38,7 @@ export const CanvasRevealEffect = ({
   containerClassName,
   dotSize,
   showGradient = true,
-  reverse = false, // This controls the direction
+  reverse = false,
 }: {
   animationSpeed?: number;
   opacities?: number[];
@@ -49,7 +49,7 @@ export const CanvasRevealEffect = ({
   reverse?: boolean; // This prop determines the direction
 }) => {
   return (
-    <div className={cn("h-full relative w-full", containerClassName)}> {/* Removed bg-white */}
+    <div className={cn("h-full relative w-full", containerClassName)}>
       <div className="h-full w-full">
         <DotMatrix
           colors={colors ?? [[0, 255, 255]]}
@@ -57,7 +57,6 @@ export const CanvasRevealEffect = ({
           opacities={
             opacities ?? [0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1]
           }
-          // Pass reverse state and speed via string flags in the empty shader prop
           shader={`
             ${reverse ? 'u_reverse_active' : 'false'}_;
             animation_speed_factor_${animationSpeed.toFixed(1)}_;
@@ -66,8 +65,6 @@ export const CanvasRevealEffect = ({
         />
       </div>
       {showGradient && (
-        // Adjust gradient colors if needed based on background (was bg-white, now likely uses containerClassName bg)
-        // Example assuming a dark background like the SignInPage uses:
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
       )}
     </div>
@@ -90,10 +87,9 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
   opacities = [0.04, 0.04, 0.04, 0.04, 0.04, 0.08, 0.08, 0.08, 0.08, 0.14],
   totalSize = 20,
   dotSize = 2,
-  shader = "", // This shader string will now contain the animation logic
+  shader = "",
   center = ["x", "y"],
 }) => {
-  // ... uniforms calculation remains the same for colors, opacities, etc.
   const uniforms = React.useMemo(() => {
     let colorsArray = [
       colors[0],
@@ -144,15 +140,14 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         type: "uniform1f",
       },
       u_reverse: {
-        value: shader.includes("u_reverse_active") ? 1 : 0, // Convert boolean to number (1 or 0)
-        type: "uniform1i", // Use 1i for bool in WebGL1/GLSL100, or just bool for GLSL300+ if supported
+        value: shader.includes("u_reverse_active") ? 1 : 0,
+        type: "uniform1i",
       },
     };
-  }, [colors, opacities, totalSize, dotSize, shader]); // Add shader to dependencies
+  }, [colors, opacities, totalSize, dotSize, shader]);
 
   return (
     <Shader
-      // The main animation logic is now built *outside* the shader prop
       source={`
         precision mediump float;
         in vec2 fragCoord;
@@ -163,7 +158,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         uniform float u_total_size;
         uniform float u_dot_size;
         uniform vec2 u_resolution;
-        uniform int u_reverse; // Changed from bool to int
+        uniform int u_reverse;
 
         out vec4 fragColor;
 
@@ -192,7 +187,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
             vec2 st2 = vec2(int(st.x / u_total_size), int(st.y / u_total_size));
 
             float frequency = 5.0;
-            float show_offset = random(st2); // Used for initial opacity random pick and color
+            float show_offset = random(st2);
             float rand = random(st2 * floor((u_time / frequency) + show_offset + frequency));
             opacity *= u_opacities[int(rand * 10.0)];
             opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size));
@@ -200,16 +195,12 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
 
             vec3 color = u_colors[int(show_offset * 6.0)];
 
-            // --- Animation Timing Logic ---
-            float animation_speed_factor = 0.5; // Extract speed from shader string
+            float animation_speed_factor = 0.5;
             vec2 center_grid = u_resolution / 2.0 / u_total_size;
             float dist_from_center = distance(center_grid, st2);
 
-            // Calculate timing offset for Intro (from center)
             float timing_offset_intro = dist_from_center * 0.01 + (random(st2) * 0.15);
 
-            // Calculate timing offset for Outro (from edges)
-            // Max distance from center to a corner of the grid
             float max_grid_dist = distance(center_grid, vec2(0.0, 0.0));
             float timing_offset_outro = (max_grid_dist - dist_from_center) * 0.02 + (random(st2 + 42.0) * 0.2);
 
@@ -217,21 +208,17 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
             float current_timing_offset;
             if (u_reverse == 1) {
                 current_timing_offset = timing_offset_outro;
-                 // Outro logic: opacity starts high, goes to 0 when time passes offset
                  opacity *= 1.0 - step(current_timing_offset, u_time * animation_speed_factor);
-                 // Clamp for fade-out transition
                  opacity *= clamp((step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
             } else {
                 current_timing_offset = timing_offset_intro;
-                 // Intro logic: opacity starts 0, goes to base opacity when time passes offset
                  opacity *= step(current_timing_offset, u_time * animation_speed_factor);
-                 // Clamp for fade-in transition
                  opacity *= clamp((1.0 - step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
             }
 
 
             fragColor = vec4(color, opacity);
-            fragColor.rgb *= fragColor.a; // Premultiply alpha
+            fragColor.rgb *= fragColor.a;
         }`}
       uniforms={uniforms}
       maxFps={60}
@@ -306,11 +293,10 @@ const ShaderMaterial = ({
     preparedUniforms["u_time"] = { value: 0, type: "1f" };
     preparedUniforms["u_resolution"] = {
       value: new THREE.Vector2(size.width * 2, size.height * 2),
-    }; // Initialize u_resolution
+    };
     return preparedUniforms;
   };
 
-  // Shader material
   const material = useMemo(() => {
     const materialObject = new THREE.ShaderMaterial({
       vertexShader: `
@@ -535,7 +521,6 @@ export const SignInPage = ({ className }: SignInPageProps) => {
   return (
     <div className={cn("flex w-[100%] flex-col min-h-screen bg-black relative", className)}>
       <div className="absolute inset-0 z-0">
-        {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
@@ -551,7 +536,6 @@ export const SignInPage = ({ className }: SignInPageProps) => {
           </div>
         )}
 
-        {/* Reverse canvas (appears when login is successful) */}
         {reverseCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
@@ -571,14 +555,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
         <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
       </div>
 
-      {/* Content Layer */}
       <div className="relative z-10 flex flex-col flex-1">
-        {/* Top navigation */}
         <MiniNavbar />
 
-        {/* Main content container */}
         <div className="flex flex-1 flex-col lg:flex-row ">
-          {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
             <div className="w-full mt-[150px] max-w-sm">
               <AnimatePresence mode="wait">
@@ -597,7 +577,6 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Error Message */}
                       {error && (
                         <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-full text-red-400 text-sm text-center">
                           {error}
@@ -728,7 +707,6 @@ export default function SignInFlow({
   const [localEmail, setLocalEmail] = useState("");
   const [localPassword, setLocalPassword] = useState("");
 
-  // Use props if provided, otherwise use local state
   const email = propEmail !== undefined ? propEmail : localEmail;
   const setEmail = propSetEmail || setLocalEmail;
   const password = propPassword !== undefined ? propPassword : localPassword;
@@ -747,7 +725,6 @@ export default function SignInFlow({
 
   return (
     <div className="min-h-screen bg-black relative">
-      {/* Canvas Reveal Effect */}
       <div className="absolute inset-0 pointer-events-none">
         <CanvasRevealEffect
           animationSpeed={3}
@@ -759,8 +736,6 @@ export default function SignInFlow({
           dotSize={2}
         />
       </div>
-
-      {/* Aurora Background */}
       <AuroraBackground className="absolute inset-0">
         <motion.div
           initial={{ opacity: 0.0, y: 40 }}
@@ -781,7 +756,6 @@ export default function SignInFlow({
             </p>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* Error Message */}
               {error && (
                 <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
                   {error}
