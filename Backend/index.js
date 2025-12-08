@@ -14,6 +14,7 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:5174',
     'https://artshos.vercel.app',
+    'https://arsthos.vercel.app',
   ],
   credentials: true
 }));
