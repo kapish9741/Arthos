@@ -162,7 +162,6 @@ router.get('/nft/chart/:nftId', async (req, res) => {
   }
 });
 
- Global Market Data
 router.get('/global', async (req, res) => {
   try {
     const data = await coinGeckoService.getGlobalMarketData();

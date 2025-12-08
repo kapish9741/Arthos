@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar"
 import { LayoutDashboard, Wallet, Briefcase, LogOut, Coins } from "lucide-react"
@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 export default function AppLayout() {
+  const navigate = useNavigate();
   const links = [
     {
       label: "Dashboard",
@@ -28,13 +29,13 @@ export default function AppLayout() {
       href: "/market",
       icon: <Coins className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
-    {
-      label: "Logout",
-      href: "/login",
-      icon: <LogOut className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
   ]
   const [open, setOpen] = useState(false)
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
     <div className={cn("flex flex-col md:flex-row bg-neutral-900 w-full flex-1 overflow-hidden", "h-screen")}>
@@ -46,6 +47,15 @@ export default function AppLayout() {
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
+              <div onClick={handleLogout} className="cursor-pointer">
+                <SidebarLink
+                  link={{
+                    label: "Logout",
+                    href: "#",
+                    icon: <LogOut className="text-neutral-200 h-5 w-5 shrink-0" />,
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div>

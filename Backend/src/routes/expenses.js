@@ -6,7 +6,6 @@ const { authenticateToken } = require('../middleware/auth');
 
 router.use(authenticateToken);
 
-// Get all expenses
 router.get('/', async (req, res) => {
     try {
         const expenses = await prisma.expense.findMany({
@@ -19,7 +18,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Add expense
 router.post('/', async (req, res) => {
     try {
         const { title, amount, category, date } = req.body;
@@ -38,7 +36,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update expense
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -58,7 +55,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Delete expense
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

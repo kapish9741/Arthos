@@ -146,7 +146,6 @@ export const LogoIcon = () => {
   );
 };
 
-// Dummy dashboard component with content
 const Dashboard = () => {
   return (
     <div className="flex flex-1">
