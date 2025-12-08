@@ -2,8 +2,12 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const prisma = require('../lib/prisma');
 
-function generateToken(email) {
-  return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+function generateToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
 }
 
 function verifyToken(token) {
@@ -22,15 +26,15 @@ async function signup(email, password, name) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { 
-        email, 
+      data: {
+        email,
         password: hashedPassword,
-        name 
+        name
       }
     });
 
-    const token = generateToken(email);
-    return { token, user: { id: user.id, email: user.email, name: user.name } };
+    const token = generateToken(user);
+    return { token, user: { id: user.id, email: user.email, name: user.name, role: user.role } };
   } catch (error) {
     if (error.message === 'User already exists') {
       throw error;
@@ -48,8 +52,8 @@ async function login(email, password) {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new Error('Invalid email or password');
 
-    const token = generateToken(email);
-    return { token, user: { id: user.id, email: user.email, name: user.name } };
+    const token = generateToken(user);
+    return { token, user: { id: user.id, email: user.email, name: user.name, role: user.role } };
   } catch (error) {
     if (error.message === 'Invalid email or password') {
       throw error;

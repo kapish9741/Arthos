@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from "react"
+import { createContext, useContext, type ReactNode } from "react"
 
 interface AiContextValue {
   apiKey?: string
@@ -15,11 +15,11 @@ interface AiProviderProps {
   userId?: string
 }
 
-export function AiProvider({ 
-  children, 
-  apiKey, 
+export function AiProvider({
+  children,
+  apiKey,
   baseUrl = "/api/ai",
-  userId 
+  userId
 }: AiProviderProps) {
   return (
     <AiContext.Provider value={{ apiKey, baseUrl, userId }}>

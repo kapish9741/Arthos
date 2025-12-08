@@ -1,99 +1,35 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://artshos.onrender.com/api';
+import axios from 'axios';
 
-export const getToken = (): string | null => {
-  return localStorage.getItem('token');
-};
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+});
 
-export const saveToken = (token: string): void => {
-  localStorage.setItem('token', token);
-};
-
-export const removeToken = (): void => {
-  localStorage.removeItem('token');
-};
-
-export const isAuthenticated = (): boolean => {
-  return !!getToken();
-};
-
-const apiRequest = async (
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<any> => {
-  const token = getToken();
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Something went wrong');
-  }
-
-  return data;
-};
+  return config;
+});
 
 export const authApi = {
   signup: async (email: string, password: string, name: string) => {
-    const data = await apiRequest('/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, name }),
-    });
-    
-    if (data.token) {
-      saveToken(data.token);
+    const res = await api.post('/auth/signup', { email, password, name });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
     }
-    
-    return data;
+    return res.data;
   },
-
   login: async (email: string, password: string) => {
-    const data = await apiRequest('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    
-    if (data.token) {
-      saveToken(data.token);
+    const res = await api.post('/auth/login', { email, password });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
     }
-    
-    return data;
+    return res.data;
   },
-
-  getProfile: async () => {
-    return await apiRequest('/auth/me', {
-      method: 'GET',
-    });
-  },
-
-  logout: async () => {
-    try {
-      await apiRequest('/auth/logout', {
-        method: 'POST',
-      });
-    } finally {
-      removeToken();
-    }
-  },
+  logout: () => {
+    localStorage.removeItem('token');
+  }
 };
 
-// Axios instance for market data (no auth required)
-import axios from 'axios';
-
-export const marketApi = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export default api;

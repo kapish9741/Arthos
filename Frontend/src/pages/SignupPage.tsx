@@ -65,7 +65,7 @@ function MiniNavbar() {
   ];
 
   const loginButtonElement = (
-    <button 
+    <button
       onClick={() => navigate('/login')}
       className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full sm:w-auto">
       LogIn
@@ -80,7 +80,7 @@ function MiniNavbar() {
                     opacity-40 filter blur-lg pointer-events-none
                     transition-all duration-300 ease-out
                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-      <button 
+      <button
         onClick={() => navigate('/signup')}
         className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
         Signup
@@ -168,8 +168,7 @@ const SignupPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
-    // Validate form
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match!");
       return;
@@ -184,24 +183,21 @@ const SignupPage = () => {
 
     try {
       await authApi.signup(formData.email, formData.password, formData.name);
-      
-      // Show reverse canvas animation
+
       setReverseCanvasVisible(true);
       setTimeout(() => {
         setInitialCanvasVisible(false);
       }, 50);
-      
-      // Show success screen
+
       setTimeout(() => {
         setStep("success");
       }, 2000);
-      
-      // Navigate to dashboard
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 3000);
     } catch (err: any) {
-      setError(err.message || "Signup failed");
+      setError(err.response?.data?.error || err.message || "Signup failed");
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -211,7 +207,6 @@ const SignupPage = () => {
   return (
     <div className="flex w-[100%] flex-col min-h-screen bg-black relative">
       <div className="absolute inset-0 z-0">
-        {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
@@ -226,8 +221,7 @@ const SignupPage = () => {
             />
           </div>
         )}
-        
-        {/* Reverse canvas (appears when form is submitted) */}
+
         {reverseCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
@@ -242,24 +236,20 @@ const SignupPage = () => {
             />
           </div>
         )}
-        
+
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,1)_0%,_transparent_100%)]" />
         <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
       </div>
-      
-      {/* Content Layer */}
+
       <div className="relative z-10 flex flex-col flex-1">
-        {/* Top navigation */}
         <MiniNavbar />
 
-        {/* Main content container */}
         <div className="flex flex-1 flex-col lg:flex-row">
-          {/* Center content (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
             <div className="w-full mt-[150px] max-w-sm">
               <AnimatePresence mode="wait">
                 {step === "form" ? (
-                  <motion.div 
+                  <motion.div
                     key="signup-form"
                     initial={{ opacity: 0, x: -100 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -271,29 +261,28 @@ const SignupPage = () => {
                       <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Create Account</h1>
                       <p className="text-[1.8rem] text-white/70 font-light">Join us today</p>
                     </div>
-                    
+
                     <div className="space-y-4">
-                      {/* Error Message */}
                       {error && (
                         <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-full text-red-400 text-sm text-center">
                           {error}
                         </div>
                       )}
-                      
+
                       <button className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors">
                         <span className="text-lg">G</span>
                         <span>Sign up with Google</span>
                       </button>
-                      
+
                       <div className="flex items-center gap-4">
                         <div className="h-px bg-white/10 flex-1" />
                         <span className="text-white/40 text-sm">or</span>
                         <div className="h-px bg-white/10 flex-1" />
                       </div>
-                      
+
                       <form onSubmit={handleSubmit} className="space-y-3">
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           name="name"
                           placeholder="Full Name"
                           value={formData.name}
@@ -301,9 +290,9 @@ const SignupPage = () => {
                           className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
                           required
                         />
-                        
-                        <input 
-                          type="email" 
+
+                        <input
+                          type="email"
                           name="email"
                           placeholder="Email Address"
                           value={formData.email}
@@ -311,9 +300,9 @@ const SignupPage = () => {
                           className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
                           required
                         />
-                        
-                        <input 
-                          type="password" 
+
+                        <input
+                          type="password"
                           name="password"
                           placeholder="Password"
                           value={formData.password}
@@ -321,9 +310,9 @@ const SignupPage = () => {
                           className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
                           required
                         />
-                        
-                        <input 
-                          type="password" 
+
+                        <input
+                          type="password"
                           name="confirmPassword"
                           placeholder="Confirm Password"
                           value={formData.confirmPassword}
@@ -331,8 +320,8 @@ const SignupPage = () => {
                           className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
                           required
                         />
-                        
-                        <button 
+
+                        <button
                           type="submit"
                           disabled={loading}
                           className="w-full rounded-full bg-white text-black font-medium py-3 hover:bg-white/90 transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -340,10 +329,10 @@ const SignupPage = () => {
                           {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
                       </form>
-                      
+
                       <p className="text-sm text-white/50">
                         Already have an account?{" "}
-                        <button 
+                        <button
                           onClick={() => navigate('/login')}
                           className="text-white hover:text-white/80 underline transition-colors"
                         >
@@ -351,13 +340,13 @@ const SignupPage = () => {
                         </button>
                       </p>
                     </div>
-                    
+
                     <p className="text-xs text-white/40 pt-10">
                       By signing up, you agree to the <a href="#" className="underline text-white/40 hover:text-white/60 transition-colors">MSA</a>, <a href="#" className="underline text-white/40 hover:text-white/60 transition-colors">Product Terms</a>, <a href="#" className="underline text-white/40 hover:text-white/60 transition-colors">Policies</a>, <a href="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacy Notice</a>, and <a href="#" className="underline text-white/40 hover:text-white/60 transition-colors">Cookie Notice</a>.
                     </p>
                   </motion.div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     key="success-step"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -368,8 +357,8 @@ const SignupPage = () => {
                       <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Welcome aboard!</h1>
                       <p className="text-[1.25rem] text-white/50 font-light">Your account has been created</p>
                     </div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.5 }}
@@ -381,8 +370,8 @@ const SignupPage = () => {
                         </svg>
                       </div>
                     </motion.div>
-                    
-                    <motion.button 
+
+                    <motion.button
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}

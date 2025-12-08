@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { useState } from "react"
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar"
-import { Home, LayoutDashboard, ShoppingBag, TrendingUp, Receipt, Wallet, Briefcase, Lightbulb, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, Wallet, Briefcase, LogOut, Coins } from "lucide-react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -9,29 +9,9 @@ import { cn } from "@/lib/utils"
 export default function AppLayout() {
   const links = [
     {
-      label: "Home",
-      href: "/",
-      icon: <Home className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
-    {
       label: "Dashboard",
       href: "/dashboard",
       icon: <LayoutDashboard className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
-    {
-      label: "NFT Marketplace",
-      href: "/nft-marketplace",
-      icon: <ShoppingBag className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
-    {
-      label: "Stock Marketplace",
-      href: "/stock-marketplace",
-      icon: <TrendingUp className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
-    {
-      label: "Transactions",
-      href: "/transactions",
-      icon: <Receipt className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
     {
       label: "Expenses",
@@ -39,23 +19,18 @@ export default function AppLayout() {
       icon: <Wallet className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
     {
-      label: "Digital Assets/Portfolio",
-      href: "/portfolio",
+      label: "Assets",
+      href: "/assets",
       icon: <Briefcase className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
     {
-      label: "AI Insights",
-      href: "/ai-insights",
-      icon: <Lightbulb className="text-neutral-200 h-5 w-5 shrink-0" />,
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-      icon: <Settings className="text-neutral-200 h-5 w-5 shrink-0" />,
+      label: "Market",
+      href: "/market",
+      icon: <Coins className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
     {
       label: "Logout",
-      href: "/",
+      href: "/login",
       icon: <LogOut className="text-neutral-200 h-5 w-5 shrink-0" />,
     },
   ]

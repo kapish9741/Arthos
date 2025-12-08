@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const coinGeckoService = require('../service/coingecko');
 
-// Crypto Routes
 router.get('/crypto/list', async (req, res) => {
   try {
     const { vs_currency, order, per_page, page, sparkline, price_change_percentage } = req.query;
-    
+
     const data = await coinGeckoService.getCryptoList({
       vs_currency,
       order,
@@ -85,11 +84,10 @@ router.get('/crypto/chart/:coinId', async (req, res) => {
   }
 });
 
-// NFT Routes
 router.get('/nft/list', async (req, res) => {
   try {
     const { order, per_page, page } = req.query;
-    
+
     const data = await coinGeckoService.getNFTList({
       order,
       per_page: per_page ? parseInt(per_page) : undefined,
@@ -164,7 +162,7 @@ router.get('/nft/chart/:nftId', async (req, res) => {
   }
 });
 
-// Global Market Data
+ Global Market Data
 router.get('/global', async (req, res) => {
   try {
     const data = await coinGeckoService.getGlobalMarketData();
